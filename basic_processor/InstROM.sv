@@ -8,6 +8,8 @@
 //
 // Revision: 
 //
+
+//will be using this one; don't use inst_rom2.sv!
 module InstROM #(parameter A=12, W=10) (
   input       [A-1:0] InstAddress,
   output logic[W-1:0] InstOut);

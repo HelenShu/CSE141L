@@ -14,7 +14,6 @@ module ALU(
   output logic [7:0] OUT,		  // or:  output reg [7:0] OUT,
   output logic SC_OUT,			  // shift out/carry out
   output logic ZERO,              // zero out flag
-  output logic BEVEN              // LSB of input B = 0
     );
 	 
   op_mne op_mnemonic;			  // type enum: used for convenient waveform viewing
@@ -22,22 +21,19 @@ module ALU(
   always_comb begin
     {SC_OUT, OUT} = 0;            // default -- clear carry out and result out
 // single instruction for both LSW & MSW
+//consider: hard-coding the accumulator value
+//will still require two inputs
   case(OP)
     kADD : {SC_OUT, OUT} = {1'b0,INPUTA} + INPUTB + SC_IN;  // add w/ carry-in & out
     kLSH : {SC_OUT, OUT} = {INPUTA, SC_IN};  	            // shift left 
-	kRSH : {OUT, SC_OUT} = {SC_IN, INPUTA};			        // shift right
-//  kRSH : {OUT, SC_OUT} = (INPUTA << 1'b1) | SC_IN;
- 	kXOR : begin 
- 	       OUT = INPUTA^INPUTB;  	     			   // exclusive OR
-	       SC_OUT = 0;					   		       // clear carry out -- possible convenience
-	       end
+    kRSH : {OUT, SC_OUT} = {SC_IN, INPUTA};			        // shift right
+    kXOR : begin 
+ 	   OUT = INPUTA^INPUTB;  	     			   // exclusive OR
+	   SC_OUT = 0;					   		       // clear carry out -- possible convenience
+	   end
     kAND : begin                                           // bitwise AND
            OUT = INPUTA & INPUTB;
 	   SC_OUT = 0;
-	   end
-    kSUB : begin
-	   OUT = INPUTA + (~INPUTB) + SC_IN;	       // check me on this!
-   	   SC_OUT = 0;                                   // check me on this!
 	   end
     default: {SC_OUT,OUT} = 0;						       // no-op, zero out
   endcase
@@ -63,7 +59,6 @@ module ALU(
 //$display("ALU Out %d \n",OUT);
     op_mnemonic = op_mne'(OP);					  // displays operation name in waveform viewer
   end											
-  always_comb BEVEN = OUT[0];          			  // note [0] -- look at LSB only
 //    OP == 3'b101; //!INPUTB[0];               
 // always_comb	branch_enable = opcode[8:6]==3'b101? 1 : 0;  
 endmodule

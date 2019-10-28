@@ -26,6 +26,6 @@ module IF(
 	else if(Branch_rel_en && ALU_zero) // conditional relative jump
 	  PC <= Target + PC;
 	else
-	  PC <= PC+1;		      // default increment (no need for ARM/MIPS +4 -- why?)
+	  PC <= PC + 1;		      // default increment (no need for ARM/MIPS +4 -- why?)
 
 endmodule
