@@ -26,6 +26,9 @@ wire        MEM_READ,	   // data_memory read enable
 	    ZERO,		   // ALU output = 0 flag
             jump_en,	   // to program counter: jump enable
             branch_en;	   // to program counter: branch enable
+wire	    rAddrA,
+	    rAddrB,
+	    wAddr;
 logic[15:0] cycle_ct;	   // standalone; NOT PC!
 logic       SC_IN;         // carry register (loop with ALU)
 //perhaps have variables for raising when programs are done? Finish when all three flags are raised
@@ -60,15 +63,22 @@ logic       SC_IN;         // carry register (loop with ALU)
 // reg file
 //change to accommodate accumulator
 //perhaps have sub-module to calculate the raddrs and waddr
-	reg_file #(.W(8),.D(4)) reg_file1 (
-		.CLK    				  ,
-		.write_en  (reg_wr_en)    , 
-		.raddrA    ({1'b0,Instruction[5:3]}),         //concatenate with 0 to give us 4 bits
-		.raddrB    ({1'b0,Instruction[2:0]}), 
-		.waddr     ({1'b0,Instruction[5:3]+1}), 	  // mux above
-		.data_in   (regWriteValue) , 
-		.data_outA (ReadA) , 
-		.data_outB (ReadB)
+   get_addresses addr (
+	.instAddress(Instructions),
+	.rAddrA(rAddrA),
+	.rAddrB(rAddrB),
+	.wAddr(wAddr)
+   );
+
+   reg_file #(.W(8),.D(4)) reg_file1 (
+	.CLK    				  ,
+	.write_en  (reg_wr_en)    , 
+	.raddrA    (rAddrA),         //concatenate with 0 to give us 4 bits
+	.raddrB    (rAddrB), 
+	.waddr     (wAddr), 	  // mux above
+	.data_in   (regWriteValue) , 
+	.data_outA (ReadA) , 
+	.data_outB (ReadB)
 	);
 // one pointer, two adjacent read accesses: (optional approach)
 //	.raddrA ({Instruction[5:3],1'b0});

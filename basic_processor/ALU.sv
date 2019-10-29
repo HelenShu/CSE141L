@@ -25,8 +25,7 @@ module ALU(
 //will still require two inputs
   case(OP)
     kADD : {SC_OUT, OUT} = {1'b0,INPUTA} + INPUTB + SC_IN;  // add w/ carry-in & out
-    kLSH : {SC_OUT, OUT} = {INPUTA, SC_IN};  	            // shift left 
-    kRSH : {OUT, SC_OUT} = {SC_IN, INPUTA};			        // shift right
+    kRSH : {OUT, SC_OUT} = {SC_IN, INPUTA};		    // shift right
     kXOR : begin 
  	   OUT = INPUTA^INPUTB;  	     			   // exclusive OR
 	   SC_OUT = 0;					   		       // clear carry out -- possible convenience
