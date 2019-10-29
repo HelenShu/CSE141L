@@ -9,7 +9,8 @@ import definitions::*;			  // includes package "definitions"
 module ALU(
   input [ 7:0] INPUTA,      	  // data inputs
                INPUTB,
-  input [ 2:0] OP,				  // ALU opcode, part of microcode
+input [ 1:0] OP,				  // ALU opcode, part of microcode
+input [1:0] funct,
   input        SC_IN,             // shift in/carry in 
   output logic [7:0] OUT,		  // or:  output reg [7:0] OUT,
   output logic SC_OUT,			  // shift out/carry out
@@ -17,18 +18,24 @@ module ALU(
     );
 
 	
+
+  
+  
+	
   op_mne op_mnemonic;			  // type enum: used for convenient waveform viewing
 	
 	logic [7:0] negB;
 	logic [7:0] result;
+	logic [3:0] opType;
 always_comb begin
-	 
+
+opType = {OP,funct}
 	  
     {SC_OUT, OUT} = 0;            // default -- clear carry out and result out
 // single instruction for both LSW & MSW
 //consider: hard-coding the accumulator value
 //will still require two inputs
-  case(OP)
+case(opType)
     kADD : {SC_OUT, OUT} = {1'b0,INPUTA} + INPUTB + SC_IN;  // add w/ carry-in & out
     kLSH : {SC_OUT, OUT} = {INPUTA, SC_IN};  	            // shift left 
     kRSH : {OUT, SC_OUT} = {SC_IN, INPUTA};			        // shift right
@@ -41,7 +48,7 @@ always_comb begin
 	   SC_OUT = 0;
 	   end
 	  
-   kCompare: begin
+   kCOMPARE: begin
 	  // negB = (~INPUTB)+1;
 	  // result = negB+InputA
 	   result = INPUTB-INPUTA;
