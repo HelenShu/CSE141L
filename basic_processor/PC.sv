@@ -6,7 +6,10 @@
 module PC(
   input init,
         jump_en,		// relative
-	branch_en,		// 
+	branch_en,		//
+	
+	logic[15:0] Target,      //get from output of LUT.sv
+	
 	CLK,
   output logic halt,
   output logic[ 9:0] PC);
@@ -19,8 +22,10 @@ always @(posedge CLK)
   else begin
     if(PC>63)
 	halt <= 1;		 // just a randomly chosen number 
-    else if (branch_en) 
-	PC <= PC + 7;
+	  
+	  else if (branch_en) 	 // absolute jumping, dunnno if we need to change anything for branch equals
+	PC <= Target;
+	  
     else if(jump_en) begin
 	if(PC > 13)
 	    PC <= PC - 14;
