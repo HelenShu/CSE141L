@@ -36,7 +36,7 @@ module Ctrl (
       else
         begin
 	OP = optype;
-	funct = {1'b0, instAddress[6]};
+	funct = {instAddress[6]};
         end
     end
   
