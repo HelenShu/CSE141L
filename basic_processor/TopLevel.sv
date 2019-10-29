@@ -78,9 +78,9 @@ InstROM instr_ROM1(
 	reg_file #(.W(8),.D(4)) reg_file1 (
 		.CLK    				  ,
 		.write_en  (reg_wr_en)    , 
-		.raddrA    ({1'b0,Instruction[5:3]}),         //concatenate with 0 to give us 4 bits
-		.raddrB    ({1'b0,Instruction[2:0]}), 
-		.waddr     ({1'b0,Instruction[5:3]+1}), 	  // mux above
+		.raddrA    ({1'b0,InA}),         //concatenate with 0 to give us 4 bits
+		.raddrB    ({1'b0,InB}), 
+		.waddr     ({1'b0,InW+1}), 	  // mux above???????????
 		.data_in   (regWriteValue) , 
 		.data_outA (ReadA) , 
 		.data_outB (ReadB)
@@ -97,6 +97,7 @@ InstROM instr_ROM1(
 	  .INPUTA  (InA),
 	  .INPUTB  (InB), 
 	  .OP      (Instruction[8:6]),
+	  .funct   (funct),
 	  .OUT     (ALU_out),//regWriteValue),
 	  .SC_IN   ,//(SC_IN),
 	  .SC_OUT  ,
@@ -104,13 +105,13 @@ InstROM instr_ROM1(
 	  );
   
 	data_mem data_mem1(
+		.CLK 		  		     ,
+		.reset		  (start)
 		.DataAddress  (ReadA)    , 
 		.ReadMem      (1'b1),          //(MEM_READ) ,   always enabled 
 		.WriteMem     (MEM_WRITE), 
-		.DataIn       (memWriteValue), 
+		.DataIn       (memWriteValue), 	///????????????????????????????????
 		.DataOut      (Mem_Out)  , 
-		.CLK 		  		     ,
-		.reset		  (start)
 	);
 	
 // count number of instructions executed
