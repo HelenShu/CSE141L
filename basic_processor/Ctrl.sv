@@ -126,7 +126,7 @@ else if((instAddress[8:6]==3'b011))	//load
       write_en <= 1;
       branch_en = 0;
 		
-else if((instAddress[8:6] == kBRE && ZERO)) //branch equals
+		else if((instAddress[8:6] == kBRE && ZERO)) //branch equals not sure if branch_en or jump_en based on implementation
       rAddrA <= instAddress[5];
       rAddrB <= instAddress[4:0];
       wAddr  <= instAddress[5];
