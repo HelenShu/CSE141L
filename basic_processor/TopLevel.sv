@@ -9,10 +9,12 @@ module TopLevel(		   // you will have the same 3 ports
     output    halt		   // done flag from DUT
     );
 
+	wire [15:0] Target;// absolute value for jump
+	
 wire [ 9:0] PC;            // program count
 wire [ 8:0] Instruction;   // our 9-bit opcode
 wire [ 7:0] ReadA, ReadB;  // reg_file outputs
-wire [ 7:0] InA, InB, 	   // ALU operand inputs
+	wire [ 7:0] InA, InB, InW, 	   // ALU operand inputs
             ALU_out;       // ALU result
 wire [ 7:0] regWriteValue, // data in to reg file
             memWriteValue, // data in to data_memory
@@ -29,28 +31,41 @@ wire        MEM_READ,	   // data_memory read enable
 logic[15:0] cycle_ct;	   // standalone; NOT PC!
 logic       SC_IN;         // carry register (loop with ALU)
 //perhaps have variables for raising when programs are done? Finish when all three flags are raised
-
+	wire [1:0] OP;
+	wire [1:0] funct;
 
 // Fetch = Program Counter + Instruction ROM
 // Program Counter
   PC PC1 (
-	.init       (start), 
+	  .Branch_abs(jump_en),
+	  .ALU_zero(ZERO),
+	  .Target(Target),
+	  .init       (start), 
 	.halt              ,  // SystemVerilg shorthand for .halt(halt), 
-	.jump_en           ,  // jump enable
-	.branch_en	       ,  // branch enable
 	.CLK        (CLK)  ,  // (CLK) is required in Verilog, optional in SystemVerilog
 	.PC             	  // program count = index to instruction memory
 	);					  
 
 // Control decoder
   Ctrl Ctrl1 (
-	.Instruction,    // from instr_ROM
+	  .instAddress(Instruction),    // from instr_ROM
+	  .rAddrA(InA),
+	  .rAddrB(InB),
+	  .wAddr(InW),
+	  .write_en  (reg_wr_en),
+	  .OP(OP);
+	  .funct(funct);
 	.ZERO,			 // from ALU: result = 0
-	.jump_en,		 // to PC
-	.branch_en		 // to PC
+	  .ReadMem(MEM_READ),		 // to PC
+	  .WriteMem(MEM_WRITE)		 // to PC
   );
-// instruction ROM
-  InstROM instr_ROM1(
+// instruction ROM actual
+/*  InstROM instr_ROM1(
+	.InstAddress   (PC), 
+	.InstOut       (Instruction)
+	);*/
+//Instruction Rom for testing.
+InstROM instr_ROM1(
 	.InstAddress   (PC), 
 	.InstOut       (Instruction)
 	);
