@@ -17,7 +17,7 @@ module Ctrl (
   
   input       ZERO,			   // ALU out[7:0] = 0
   output logic jump_en,
-               branch_en,
+
                ReadMem,   //feeding these to datameme
                WriteMem,  //feeding these to damameme
   );
