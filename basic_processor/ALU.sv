@@ -57,6 +57,12 @@ case(opType)
 	   OUT = 0;
 	   ZERO = 1;
 		   end
+	   else			//don't branch
+		 OUT = 1;
+	   	 ZERO = 0;
+   kMove: begin
+	OUT = INPUT B; //??
+   end
    end
 	  
 	  
