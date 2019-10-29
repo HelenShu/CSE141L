@@ -15,10 +15,15 @@ module ALU(
   output logic SC_OUT,			  // shift out/carry out
   output logic ZERO,              // zero out flag
     );
-	 
+
+	
   op_mne op_mnemonic;			  // type enum: used for convenient waveform viewing
 	
-  always_comb begin
+	logic [7:0] negB;
+	logic [7:0] result;
+always_comb begin
+	 
+	  
     {SC_OUT, OUT} = 0;            // default -- clear carry out and result out
 // single instruction for both LSW & MSW
 //consider: hard-coding the accumulator value
@@ -35,6 +40,19 @@ module ALU(
            OUT = INPUTA & INPUTB;
 	   SC_OUT = 0;
 	   end
+	  
+   kCompare: begin
+	  // negB = (~INPUTB)+1;
+	  // result = negB+InputA
+	   result = INPUTB-INPUTA;
+	   if((result==0))
+		   begin
+	   OUT = 0;
+	   ZERO = 1;
+		   end
+   end
+	  
+	  
     default: {SC_OUT,OUT} = 0;						       // no-op, zero out
   endcase
 // option 2 -- separate LSW and MSW instructions
