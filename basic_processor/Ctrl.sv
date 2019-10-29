@@ -11,7 +11,10 @@ module Ctrl (
   output logic write_en            //tells regfile we're writing
   
 	
-
+	output logic [1:0] OP;
+	output logic [1:0] funct;
+  	
+  
   input       ZERO,			   // ALU out[7:0] = 0
   output logic jump_en,
                branch_en,
@@ -19,22 +22,24 @@ module Ctrl (
                WriteMem,  //feeding these to damameme
   );
 
-/*
+
   logic [1:0] opType;
   logic [1:0] function;
   
     always_comb begin
-      opType = instAddress[8:7]
+    optype = instAddress[8:7]
       if(opType == 2'b00)
         begin
+	OP = optype;
         funct = instAddress[6:5];
         end
       else
         begin
-        funct = instAddress[6];
+	OP = optype;
+	funct = {1'b0, instAddress[6]};
         end
     end
-  */
+  
   
     //controls the regfile?
     
