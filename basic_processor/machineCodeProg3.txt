@@ -1,1 +1,83 @@
+00_1_001_10100000 //Load R1, [160]		@load 5-bit pattern
+00_11_001_001_11111000  //And R1, R1, 248	@mask to only get desired bits. use reg instead?
+Load R2, 128 		@tracks location in message
+Loop1:
+01_1_000_010  //Load R0, [R2]		@load a byte from message
+00_11_010_010_1 //Add R2, R2, 1		@increment to next byte in message
+01_1_100_000  //Load R4, 0		@reset index
+Loop2:
+00_11_010_000_11111000  //And R3, R0, 248	
+00_00_000_01  //Shift Left R0, 1		@shift byte for next compare
+10_1_001_010  //Cmp R1, R3
+Beq Match1
+Jump NoMatch1
+Match1:
+00_01_101_101_1 //Add R5, R5, 1		@increment counter of matches
+NoMatch1:
+00_01_100_100_1 //Add R4, R4, 1		@increment number of iterations
+10_1_100_100  //Cmp R4, 4		@only 4 possible positions of a 5 bit pattern in a byte
+Beq End1
+Jump Loop2
+End1:			@pattern not in byte
+10_1_010_10100000 // Cmp R2, 160
+Beq End2
+Jump Loop1
+End2:			@finished incrementing through message
+01_0_101_11000000 //Store R5, [192]
 
+00_1_001_10100000 //Load R1, [160]		@load 5-bit pattern
+00_10_001_001 //And R1, R1, 248	@mask to only get desired bits. use reg instead?
+Load R2, 128		@tracks location in message
+Loop3:
+00_1_000_010  //Load R0, [R2]		@load a byte from message
+00_01_010_010_1 //Add R2, R2, 1		@increment to next byte in message
+Load R4, 0		@reset index
+Loop4:
+00_10_011_000_11111000  //And R3, R0, 248
+00_00_000_01  //Shift Left R0, 1		@shift byte for next compare
+10_1_001_011  //Cmp R1, R3
+Beq Match2
+00_01_100_100_1 //Add R4, R4, 1		@increment number of iterations
+10_1_100_100  //Cmp R4, 4		@only 4 possible positions of a 5 bit pattern in a byte
+Beq End3
+Jump Loop4
+Match2:
+00_01_101_101_1 //Add R5, R5, 1		@increment counter of matches
+End3:			@pattern not in byte
+10_1_010_10100000 //Cmp R2, 160
+Beq End4
+Jump Loop3
+End4:			@finished incrementing through message
+01_0_101_11000001 //Store R5, [193]
+
+00_1_000_10100000 Load R0, [160]		@load 5-bit pattern
+00_10_000_000_11111000  //And R0, R0, 248	@mask to only get desired bits. use reg instead?
+00_1_010_10000000 R2, [128]		@load in first byte of message
+Load R1, 129		@tracks location in message
+Loop5:
+L00_1_001_oad R3, [R1]		@load a byte from message
+00_01_001_001_1 //Add R1, R1, 1		@increment to next byte in message
+Load R5, 0		@reset index
+Loop6:
+00_10_100_010_11111000  //And R4, R2, 248	
+00_00_010_01  //Shift Left R2, 1		@shift byte for next compare
+00_00_011_01  //Shift Left R3, 1
+00_10_111_011_1 //And R7, R3, 1		@take the carry bit from R3 after rotate shift
+00_10_010_010_11111110  //And R2, R2, 254	@make bit[0] in R2 equal 0
+00_01_010_010_111 //Add R2. R2. R7		@place carry bit from R3 into bit[0] of R2
+10_1_000_100  //Cmp R0, R4
+Beq Match3
+Jump NoMatch3
+Match3:
+00_01_110_110_1 //Add R6, R6, 1		@increment counter of matches
+NoMatch3:
+00_01_101_101_1 //Add R5, R5, 1		@increment number of iterations
+10_1_101_1000 //Cmp R5, 8		@after shifting through 8 bits load in next byte
+Beq End5
+Jump Loop6
+End5:			@pattern not in byte
+10_1_001_10100000 //Cmp R1, 160
+Beq End6
+Jump Loop5
+End6:			@finished incrementing through message
+01_0_101_11000010 //Store R6, [194]
