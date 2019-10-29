@@ -136,11 +136,15 @@ else if((instAddress[8:6]==3'b011))	//load
       write_en <= 1;
       branch_en = 1;
 else
-  else				 // this is a filler else for now
+  else				 // Assuming this is move??
       rAddrA <= instAddress[5:3];
       rAddrB <= instAddress[3:0];
       wAddr  <= instAddress[5:3];
-      write_en <= 1; 
+      ReadMem <= 0;
+      WriteMem <= 0; 
+      jump_en <= 0;
+      write_en <= 1;
+      branch_en = 0;
   end
    
  
