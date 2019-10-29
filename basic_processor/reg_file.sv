@@ -29,3 +29,4 @@ always_ff @ (posedge CLK)
     registers[waddr] <= data_in;
 
 endmodule
+//
