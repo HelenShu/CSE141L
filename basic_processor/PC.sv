@@ -4,36 +4,26 @@
 // default = increment by 1
 // issues halt when PC reaches 63
 module PC(
-  input init,
-        jump_en,		// relative
-	branch_en,		//
-	
-	logic[15:0] Target,      //get from output of LUT.sv
-	
-	CLK,
-  output logic halt,
-  output logic[ 9:0] PC);
-
-always @(posedge CLK)
-  if(init) begin
-    PC <= 0;
-    halt <= 0;
-  end
-  else begin
-    if(PC>63)
-	halt <= 1;		 // just a randomly chosen number 
-	  
-	  else if (branch_en) 	 // absolute jumping, dunnno if we need to change anything for branch equals
-	PC <= Target;
-	  
-    else if(jump_en) begin
-	if(PC > 13)
-	    PC <= PC - 14;
+ 	input Branch_abs,		      // jump to Target value	   
+ 	input Branch_rel_en,		  // jump to Target + PC
+ 	input ALU_zero,			  // flag from ALU
+ 	input [15:0] Target,		  // jump ... "how high?"
+ 	input Init,				  // reset, start, etc. 
+  	input Halt,				  // 1: freeze PC; 0: run PC
+  	input CLK,				  // PC can change on pos. edges only
+	output logic[9:0] PC		  // program counter
+  );
+	 
+  always_ff @(posedge CLK)	  // or just always; always_ff is a linting construct
+	if(Init)
+	  PC <= 0;				  // for first program; want different value for 2nd or 3rd
+	else if(Halt)
+	  PC <= PC;
+	else if(Branch_abs)	      // unconditional absolute jump
+	  PC <= Target;
+	else if(Branch_rel_en && ALU_zero) // conditional relative jump
+	  PC <= Target + PC;
 	else
-	    halt <= 1;       // trap error condition
-        end
-    else 
-	  PC <= PC + 1;	     // default == increment by 1
-  end
+	  PC <= PC + 1;		      // default increment (no need for ARM/MIPS +4 -- why?)
+
 endmodule
-        
