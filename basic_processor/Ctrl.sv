@@ -51,7 +51,6 @@ always_comb
   ReadMem <= 0;
   WriteMem <= 0; 
   jump_en <= 0;
-  branch_en <= 0;
  //Little confused about the instruction breakdown here.
 // basically add in write enable where necessary. Also change memRead and MemWrite where necesassry.
 
@@ -66,9 +65,9 @@ if ((instAddress[8:7] == 2'b00)) //R-type instruction
 	    wAddr  <= [4:3];
      	    write_en <= 1;
 	    ReadMem <= 0;
-  	WriteMem <= 0; 
-  	jump_en <= 0;
- 	 branch_en <= 0;  
+  	    WriteMem <= 0; 
+  	    jump_en <= 0;
+
 	  end
       else
           begin
@@ -77,9 +76,9 @@ if ((instAddress[8:7] == 2'b00)) //R-type instruction
           //wAddr is accumulator
 	  write_en <= 1;
 	  ReadMem <= 0;
-  WriteMem <= 0; 
-  jump_en <= 0;
-  branch_en <= 0;
+          WriteMem <= 0; 
+          jump_en <= 0;
+
           end
       end
 		
@@ -90,9 +89,9 @@ else if ((instAddress[8:6] == 3'b101)) //compare
       wAddr  <= instAddress[5:3];
       write_en <= 1;
       ReadMem <= 0;
-  WriteMem <= 0; 
-  jump_en <= 0;
-  branch_en <= 0;
+      WriteMem <= 0; 
+      jump_en <= 0;
+
     end
 		
 else if((instAddress[8:6] ==  kJ)) //jump
@@ -103,7 +102,7 @@ else if((instAddress[8:6] ==  kJ)) //jump
      WriteMem <= 0;
      write_en <= 1;
      jump_en <= 1;
-     branch_en <= 0;
+
 
 //These Operations control loading and storing so set memread and memwrite
 else if((instAddress[8:6]==3'b010))	//store
@@ -114,7 +113,7 @@ else if((instAddress[8:6]==3'b010))	//store
       WriteMem <= 1; 
       jump_en <= 0;
       write_en <= 0;
-      branch_en = 0;			
+			
 
 else if((instAddress[8:6]==3'b011))	//load
       rAddrA <= instAddress[5];
@@ -124,17 +123,16 @@ else if((instAddress[8:6]==3'b011))	//load
       WriteMem <= 0; 
       jump_en <= 0;
       write_en <= 1;
-      branch_en = 0;
+
 		
-		else if((instAddress[8:6] == kBRE && ZERO)) //branch equals not sure if branch_en or jump_en based on implementation
+else if((instAddress[8:6] == kBRE && ZERO)) //branch equals not sure if branch_en or jump_en based on implementation
       rAddrA <= instAddress[5];
       rAddrB <= instAddress[4:0];
       wAddr  <= instAddress[5];
       ReadMem <= 0;
       WriteMem <= 0; 
-      jump_en <= 0;
+      jump_en <= 1;
       write_en <= 1;
-      branch_en = 1;
 else
   else				 // Assuming this is move??
       rAddrA <= instAddress[5:3];
@@ -144,7 +142,7 @@ else
       WriteMem <= 0; 
       jump_en <= 0;
       write_en <= 1;
-      branch_en = 0;
+
   end
    
  
