@@ -18,10 +18,10 @@ wire [ 7:0] ReadA, ReadB;  // reg_file outputs
             ALU_out;       // ALU result
 wire [ 7:0] regWriteValue, // data in to reg file
             memWriteValue, // data in to data_memory
-	    Mem_Out;	   // data out from data_memory
-wire        MEM_READ,	   // data_memory read enable
+	         Mem_Out;	   // data out from data_memory
+wire   MEM_READ,	   // data_memory read enable
 	    MEM_WRITE,	   // data_memory write enable
-   	    reg_wr_en,	   // reg_file write enable
+   	 reg_wr_en,	   // reg_file write enable
 	    sc_clr,        // carry reg clear
 	    sc_en,	       // carry reg enable
 	    SC_OUT,	       // to carry register
@@ -53,8 +53,8 @@ logic       SC_IN;         // carry register (loop with ALU)
 	  .rAddrB(InB),
 	  .wAddr(InW),
 	  .write_en  (reg_wr_en),
-	  .OP(OP);
-	  .funct(funct);
+	  .OP(OP),
+	  .funct(funct),
 	.ZERO,			 // from ALU: result = 0
 	  .ReadMem(MEM_READ),		 // to PC
 	  .WriteMem(MEM_WRITE)		 // to PC
@@ -91,7 +91,7 @@ InstROM instr_ROM1(
 
     assign InA = ReadA;						          // connect RF out to ALU in
     assign InB = ReadB;
-    assign MEM_WRITE = (Instruction == 9'h111);       // mem_store command
+  //  assign MEM_WRITE = (Instruction == 9'h111);       // mem_store command
     assign regWriteValue = load_inst? Mem_Out : ALU_out;  // 2:1 switch into reg_file
     ALU ALU1  (
 	  .INPUTA  (InA),
@@ -101,17 +101,17 @@ InstROM instr_ROM1(
 	  .OUT     (ALU_out),//regWriteValue),
 	  .SC_IN   ,//(SC_IN),
 	  .SC_OUT  ,
-	  .ZERO ,
+	  .ZERO 
 	  );
   
 	data_mem data_mem1(
 		.CLK 		  		     ,
-		.reset		  (start)
+		.reset		  (start),
 		.DataAddress  (ReadA)    , 
 		.ReadMem      (1'b1),          //(MEM_READ) ,   always enabled 
 		.WriteMem     (MEM_WRITE), 
 		.DataIn       (memWriteValue), 	///????????????????????????????????
-		.DataOut      (Mem_Out)  , 
+		.DataOut      (Mem_Out)   
 	);
 	
 // count number of instructions executed

@@ -10,10 +10,12 @@ package definitions;
     const logic [2:0]kCLR  = 3'b111;
     const logic [2:0]kJ    = 3'b110;
     const logic [3:0]kBRE  = 3'b100;
+	 const logic [2:0]kCOMPARE = 3'b101;
+	 const logic [2:0]kMove = 3'b111;
 // enum names will appear in timing diagram
     typedef enum logic[2:0] {
         ADD, RSH, XOR,
-        AND, CLR, kJs, kBRE } op_mne;
+        AND, CLR, kJs, BRE, MOV } op_mne;
 // note: kADD is of type logic[2:0] (3-bit binary)
 //   ADD is of type enum -- equiv., but watch casting
 //   see ALU.sv for how to handle this   

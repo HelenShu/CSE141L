@@ -9,12 +9,12 @@ import definitions::*;			  // includes package "definitions"
 module ALU(
   input [ 7:0] INPUTA,      	  // data inputs
                INPUTB,
-input [ 1:0] OP,				  // ALU opcode, part of microcode
-input [1:0] funct,
+  input [ 1:0] OP,				  // ALU opcode, part of microcode
+  input [1:0]  funct,
   input        SC_IN,             // shift in/carry in 
   output logic [7:0] OUT,		  // or:  output reg [7:0] OUT,
   output logic SC_OUT,			  // shift out/carry out
-  output logic ZERO,              // zero out flag
+  output logic ZERO              // zero out flag
     );
 
 	
@@ -27,9 +27,12 @@ input [1:0] funct,
 	logic [7:0] negB;
 	logic [7:0] result;
 	logic [3:0] opType;
-always_comb begin
+	
 
-opType = {OP,funct}
+always@(*) begin
+
+opType = {OP,funct};
+
 	  
     {SC_OUT, OUT} = 0;            // default -- clear carry out and result out
 // single instruction for both LSW & MSW
@@ -37,7 +40,6 @@ opType = {OP,funct}
 //will still require two inputs
 case(opType)
     kADD : {SC_OUT, OUT} = {1'b0,INPUTA} + INPUTB + SC_IN;  // add w/ carry-in & out
-    kLSH : {SC_OUT, OUT} = {INPUTA, SC_IN};  	            // shift left 
     kRSH : {OUT, SC_OUT} = {SC_IN, INPUTA};			        // shift right
     kXOR : begin 
  	   OUT = INPUTA^INPUTB;  	     			   // exclusive OR
@@ -58,11 +60,15 @@ case(opType)
 	   ZERO = 1;
 		   end
 	   else			//don't branch
-		 OUT = 1;
-	   	 ZERO = 0;
+		begin
+		OUT = 1;
+	   ZERO = 0;
+		end
+	end
+	
+	
    kMove: begin
-	OUT = INPUT B; //??
-   end
+	OUT = INPUTB; //??
    end
 	  
 	  

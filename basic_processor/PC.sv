@@ -7,16 +7,16 @@ module PC(
  	input Branch_abs,		      // jump to Target value	   
  	input ALU_zero,			  // flag from ALU
  	input [15:0] Target,		  // jump ... "how high?"
- 	input Init,				  // reset, start, etc. 
-  	input Halt,				  // 1: freeze PC; 0: run PC
+ 	input init,				  // reset, start, etc. 
+  	input halt,				  // 1: freeze PC; 0: run PC
   	input CLK,				  // PC can change on pos. edges only
 	output logic[9:0] PC		  // program counter
   );
 	 
   always_ff @(posedge CLK)	  // or just always; always_ff is a linting construct
-	if(Init)
+	if(init)
 	  PC <= 0;				  // for first program; want different value for 2nd or 3rd
-	else if(Halt)
+	else if(halt)
 	  PC <= PC;
 	else if(Branch_abs)	      // unconditional absolute jump
 	  PC <= Target;
