@@ -29,10 +29,10 @@ module ALU(
 	logic [3:0] opType;
 	
 
-always@(*) begin
+always_comb begin
 
 opType = {OP,funct};
-
+result = 0;
 	  
     {SC_OUT, OUT} = 0;            // default -- clear carry out and result out
 // single instruction for both LSW & MSW
