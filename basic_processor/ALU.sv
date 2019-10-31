@@ -7,9 +7,9 @@
 //   combinational (unclocked) ALU
 import definitions::*;			  // includes package "definitions"
 module ALU(
-  input [ 7:0] INPUTA,      	  // data inputs
+  input [7:0] INPUTA,      	  // data inputs
                INPUTB,
-  input [ 1:0] OP,				  // ALU opcode, part of microcode
+  input [1:0] OP,				  // ALU opcode, part of microcode
   input [1:0]  funct,
   input        SC_IN,             // shift in/carry in 
   output logic [7:0] OUT,		  // or:  output reg [7:0] OUT,

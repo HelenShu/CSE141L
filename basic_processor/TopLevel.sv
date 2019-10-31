@@ -33,6 +33,7 @@ logic       SC_IN;         // carry register (loop with ALU)
 //perhaps have variables for raising when programs are done? Finish when all three flags are raised
 	wire [1:0] OP;
 	wire [1:0] funct;
+	wire [4:0] immediate;
 
 // Fetch = Program Counter + Instruction ROM
 // Program Counter
@@ -55,7 +56,9 @@ logic       SC_IN;         // carry register (loop with ALU)
 	  .write_en  (reg_wr_en),
 	  .OP(OP),
 	  .funct(funct),
-	.ZERO,			 // from ALU: result = 0
+	  .immediate(immediate),
+	  .ZERO,			 // from ALU: result = 0
+	  .jump_en,
 	  .ReadMem(MEM_READ),		 // to PC
 	  .WriteMem(MEM_WRITE)		 // to PC
   );
@@ -96,7 +99,7 @@ InstROM instr_ROM1(
     ALU ALU1  (
 	  .INPUTA  (InA),
 	  .INPUTB  (InB), 
-	  .OP      (Instruction[8:6]),
+	  .OP      (OP),
 	  .funct   (funct),
 	  .OUT     (ALU_out),//regWriteValue),
 	  .SC_IN   ,//(SC_IN),
@@ -108,10 +111,16 @@ InstROM instr_ROM1(
 		.CLK 		  		     ,
 		.reset		  (start),
 		.DataAddress  (ReadA)    , 
-		.ReadMem      (1'b1),          //(MEM_READ) ,   always enabled 
+		.ReadMem      (MEM_READ),          //(MEM_READ) ,   always enabled 
 		.WriteMem     (MEM_WRITE), 
-		.DataIn       (memWriteValue), 	///????????????????????????????????
+		.DataIn       (ALU_out), 	///????????????????????????????????
 		.DataOut      (Mem_Out)   
+	);
+	
+	LUT Branch_Tables(
+		.opcode(OP),
+		.immediate(immediate),
+		.Target(Target)
 	);
 	
 // count number of instructions executed

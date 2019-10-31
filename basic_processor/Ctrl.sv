@@ -13,6 +13,7 @@ module Ctrl (
 	
   output logic [1:0] OP,
   output logic [1:0] funct,
+  output logic [4:0] immediate,
   	
   
   input  wire        ZERO,			   // ALU out[7:0] = 0
@@ -30,6 +31,7 @@ module Ctrl (
 
   
     always_comb begin
+	 immediate = instAddress[4:0];
     opType = instAddress[8:7];
       if(opType == 2'b00)
         begin

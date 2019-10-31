@@ -16,7 +16,7 @@ module TopLevel_tb;	     // Lab 17
 
 // Instantiate the Device Under Test (DUT)
   TopLevel DUT (
-	.start           , 
+	.start          , 
 	.CLK             , 
 	.halt             
 	);
