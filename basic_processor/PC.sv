@@ -5,11 +5,11 @@
 // issues halt when PC reaches 63
 module PC(
   input init,
-        jump_en,		// relative
-	branch_en,		// 
+        jump_en,
 	CLK,
+  input [15:0] Target,
   output logic halt,
-  output logic[ 9:0] PC);
+  output logic[ 15:0] PC);
 
 always @(posedge CLK)
   if(init) begin
@@ -17,18 +17,14 @@ always @(posedge CLK)
     halt <= 0;
   end
   else begin
-    if(PC>63)
+    if(PC>2)		//should be for end of all three programs
 	halt <= 1;		 // just a randomly chosen number 
-    else if (branch_en) 
-	PC <= PC + 7;
-    else if(jump_en) begin
-	if(PC > 13)
-	    PC <= PC - 14;
-	else
-	    halt <= 1;       // trap error condition
-        end
+    else if(jump_en)
+	PC <= Target;	//have module that calculates target, or send it in
     else 
 	  PC <= PC + 1;	     // default == increment by 1
   end
+
+
 endmodule
         

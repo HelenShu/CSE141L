@@ -9,7 +9,7 @@ module TopLevel(		   // you will have the same 3 ports
     output    halt		   // done flag from DUT
     );
 
-wire [ 9:0] PC;            // program count
+wire [ 15:0] PC;            // program count
 wire [ 8:0] Instruction;   // our 9-bit opcode
 wire [ 7:0] ReadA, ReadB;  // reg_file outputs
 wire [ 7:0] InA, InB, 	   // ALU operand inputs
@@ -23,34 +23,36 @@ wire        MEM_READ,	   // data_memory read enable
 	    sc_clr,        // carry reg clear
 	    sc_en,	       // carry reg enable
 	    SC_OUT,	       // to carry register
-	    ZERO,		   // ALU output = 0 flag
-            jump_en,	   // to program counter: jump enable
-            branch_en;	   // to program counter: branch enable
-wire	    rAddrA,
+	    ZERO,		// ALU output = 0 flag
+	    GREATER,		// ALU output > 0 flag
+            jump_en;	   // to program counter: jump/branch enable
+wire [4:0]  rAddrA,
 	    rAddrB,
 	    wAddr;
-logic[15:0] cycle_ct;	   // standalone; NOT PC!
+wire [15:0]  immValue;	//used to determine if second value is register or immediate
+wire [15:0] Target;
+logic[15:0] cycle_ct;	   // standalone; NOT PC
 logic       SC_IN;         // carry register (loop with ALU)
 //perhaps have variables for raising when programs are done? Finish when all three flags are raised
-
 
 // Fetch = Program Counter + Instruction ROM
 // Program Counter
   PC PC1 (
-	.init       (start), 
-	.halt              ,  // SystemVerilg shorthand for .halt(halt), 
-	.jump_en           ,  // jump enable
-	.branch_en	       ,  // branch enable
-	.CLK        (CLK)  ,  // (CLK) is required in Verilog, optional in SystemVerilog
+	.init (start), 
+	.halt,  // SystemVerilg shorthand for .halt(halt), 
+	.jump_en,  // jump enable
+	.Target,
+	.CLK(CLK),  // (CLK) is required in Verilog, optional in SystemVerilog
 	.PC             	  // program count = index to instruction memory
 	);					  
 
 // Control decoder
   Ctrl Ctrl1 (
 	.Instruction,    // from instr_ROM
-	.ZERO,			 // from ALU: result = 0
+	.ZERO,			 // from ALU: compare = 0
+	.GREATER,		// from ALU, compare > 0
 	.jump_en,		 // to PC
-	.branch_en		 // to PC
+	.Target
   );
 // instruction ROM
   InstROM instr_ROM1(
@@ -58,44 +60,46 @@ logic       SC_IN;         // carry register (loop with ALU)
 	.InstOut       (Instruction)
 	);
 
-  assign load_inst = Instruction[8:6]==3'b110;  // calls out load specially
+  assign load_inst = Instruction[8:5]==4'b0111;  // calls out load specially
 
 // reg file
 //change to accommodate accumulator
 //perhaps have sub-module to calculate the raddrs and waddr
    get_addresses addr (
-	.instAddress(Instructions),
+	.instAddress(Instruction),
 	.rAddrA(rAddrA),
 	.rAddrB(rAddrB),
 	.wAddr(wAddr)
    );
 
-   reg_file #(.W(8),.D(4)) reg_file1 (
-	.CLK    				  ,
-	.write_en  (reg_wr_en)    , 
+   reg_file reg_file1 (
+	.CLK,
+	.write_en  (reg_wr_en), 
 	.raddrA    (rAddrA),         //concatenate with 0 to give us 4 bits
-	.raddrB    (rAddrB), 
+	.rAddrB    (rAddrB), 
 	.waddr     (wAddr), 	  // mux above
-	.data_in   (regWriteValue) , 
-	.data_outA (ReadA) , 
+	.immValue,
+	.data_in   (regWriteValue), 
+	.data_outA (ReadA), 
 	.data_outB (ReadB)
-	);
+    );
 // one pointer, two adjacent read accesses: (optional approach)
 //	.raddrA ({Instruction[5:3],1'b0});
 //	.raddrB ({Instruction[5:3],1'b1});
 
     assign InA = ReadA;						          // connect RF out to ALU in
     assign InB = ReadB;
-    assign MEM_WRITE = (Instruction == 9'h111);       // mem_store command
+    assign MEM_WRITE = (Instruction[8:5] == 5'b0110);       // mem_store command
     assign regWriteValue = load_inst? Mem_Out : ALU_out;  // 2:1 switch into reg_file
     ALU ALU1  (
 	  .INPUTA  (InA),
 	  .INPUTB  (InB), 
 	  .OP      (Instruction[8:6]),
 	  .OUT     (ALU_out),//regWriteValue),
-	  .SC_IN   ,//(SC_IN),
+	  .SC_IN   ,
 	  .SC_OUT  ,
 	  .ZERO ,
+	  .GREATER
 	  );
   
 	data_mem data_mem1(

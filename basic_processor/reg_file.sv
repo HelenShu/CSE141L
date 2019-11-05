@@ -4,23 +4,28 @@
 //
 // Additional Comments: 					  $clog2
 
-module reg_file #(parameter W=8, D=5)(		 // W = data path width; D = pointer width
+module reg_file(		 // W = data path width; D = pointer width
   input           CLK,
                   write_en,
-  input  [ D-1:0] raddrA,
-                  raddrB,
+  input  [4:0] raddrA,
+                  rAddrB,
                   waddr,
-  input  [ W-1:0] data_in,
-  output [ W-1:0] data_outA,
-  output logic [W-1:0] data_outB
+  input	 [15:0]	  immValue,
+  input  [15:0] data_in,
+  output logic [15:0] data_outA,
+  output logic [15:0] data_outB
     );
 
 // W bits wide [W-1:0] and 2**4 registers deep 	 
-logic [W-1:0] registers[2**D];	  // or just registers[16] if we know D=4 always
-
-// combinational reads w/ blanking of address 0
-assign      data_outA = raddrA? registers[raddrA] : '0;	 // can't read from addr 0, just like MIPS
-always_comb data_outB = registers[raddrB];               // can read from addr 0, just like ARM
+logic [15:0] registers[16];	  // or just registers[16] if we know D=4 always
+ 	
+always_comb data_outA = registers[raddrA];
+always_comb begin
+	if ((immValue == 0)) //is an immediate value
+		data_outB <= registers[rAddrB];
+	else
+		data_outB <= immValue; 
+	end    
 
 // sequential (clocked) writes 
 always_ff @ (posedge CLK)

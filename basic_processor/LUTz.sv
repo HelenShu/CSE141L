@@ -1,4 +1,5 @@
 // priority encoder lookup table
+//use as lookup table for branching/jumping
 // CSE141L
 module LUT(
   input[5:0] addr,
