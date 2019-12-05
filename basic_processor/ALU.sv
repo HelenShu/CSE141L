@@ -11,6 +11,8 @@ module ALU(
                INPUTB,		  // value from register/immediate
   input [ 3:0] OP,				  // ALU opcode, part of microcode
   input        SC_IN,             // shift in/carry in 
+  input	       ZERO_IN,
+  input        GREATER_IN,
   output logic [7:0] OUT,		  // or:  output reg [7:0] OUT,
   output logic SC_OUT,			  // shift out/carry out
   output logic ZERO,              // zero out flag
@@ -83,8 +85,14 @@ module ALU(
            ZERO = INPUTA - INPUTB == 0 ? 1 : 0;
 	   GREATER = INPUTA - INPUTB > 0 ? 1 : 0;
 	   SC_OUT = 0;
+	   OUT = 0;
 	   end
-    default: {SC_OUT,OUT} = 0;	// no-op, zero out
+    default: begin
+	SC_OUT = 0;
+	OUT = 0;
+	ZERO = ZERO_IN;
+	GREATER = GREATER_IN;
+	end
   endcase
 
   op_mnemonic = op_mne'(OP); // displays operation name in waveform viewer

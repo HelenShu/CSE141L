@@ -32,6 +32,8 @@ wire [7:0] immValue;	//holds immediate value
 wire [15:0] Target;
 logic[15:0] cycle_ct;	   // standalone; NOT PC
 logic       SC_IN;         // carry register (loop with ALU)
+logic 	    ZERO_IN;
+logic       GREATER_IN;
 //perhaps have variables for raising when programs are done? Finish when all three flags are raised
 
 // Fetch = Program Counter + Instruction ROM
@@ -48,8 +50,8 @@ logic       SC_IN;         // carry register (loop with ALU)
 // Control decoder
   Ctrl Ctrl1 (
 	.Instruction,    // from instr_ROM
-	.ZERO,			 // from ALU: compare = 0
-	.GREATER,		// from ALU, compare > 0
+	.ZERO(ZERO_IN),			 // from ALU: compare = 0
+	.GREATER(GREATER_IN),		// from ALU, compare > 0
 	.jump_en,		 // to PC
 	.Target
   );
@@ -94,6 +96,8 @@ logic       SC_IN;         // carry register (loop with ALU)
 	  .OP      (Instruction[8:5]),
 	  .OUT     (ALU_out),//regWriteValue),
 	  .SC_IN   ,
+	  .ZERO_IN,
+	  .GREATER_IN,
 	  .SC_OUT  ,
 	  .ZERO ,
 	  .GREATER
@@ -114,10 +118,14 @@ always_ff @(posedge CLK)
   if (start == 1) begin	   // if(start)
   	cycle_ct <= 0;
 	SC_IN <= 0;
+	ZERO_IN <= 0;
+	GREATER_IN <= 0;
 	end
   else if(halt == 0) begin  // if(!halt)
   	cycle_ct <= cycle_ct+16'b1;
 	SC_IN <= SC_OUT;
-	end
+	ZERO_IN <= ZERO;
+	GREATER_IN <= GREATER;
+  end
 
 endmodule
