@@ -17,7 +17,7 @@ always @(posedge CLK)
     halt <= 0;
   end
   else begin
-    if(PC>2)		//should be for end of all three programs
+    if(PC>510)		//should be for end of all three programs
 	halt <= 1;		 // just a randomly chosen number 
     else if(jump_en)
 	PC <= Target;	//have module that calculates target, or send it in

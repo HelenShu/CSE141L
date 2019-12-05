@@ -19,7 +19,6 @@ wire [ 7:0] regWriteValue, // data in to reg file
 	    Mem_Out;	   // data out from data_memory
 wire        MEM_READ,	   // data_memory read enable
 	    MEM_WRITE,	   // data_memory write enable
-   	    reg_wr_en,	   // reg_file write enable
 	    sc_clr,        // carry reg clear
 	    sc_en,	       // carry reg enable
 	    SC_OUT,	       // to carry register
@@ -29,7 +28,7 @@ wire        MEM_READ,	   // data_memory read enable
 wire [4:0]  rAddrA,
 	    rAddrB,
 	    wAddr;
-wire [15:0]  immValue;	//used to determine if second value is register or immediate
+wire [7:0] immValue;	//holds immediate value
 wire [15:0] Target;
 logic[15:0] cycle_ct;	   // standalone; NOT PC
 logic       SC_IN;         // carry register (loop with ALU)
@@ -69,23 +68,21 @@ logic       SC_IN;         // carry register (loop with ALU)
 	.instAddress(Instruction),
 	.rAddrA(rAddrA),
 	.rAddrB(rAddrB),
-	.wAddr(wAddr)
+	.wAddr(wAddr),
+	.immValue(immValue)
    );
 
    reg_file reg_file1 (
 	.CLK,
-	.write_en  (reg_wr_en), 
+	.reset	   (start),
 	.raddrA    (rAddrA),         //concatenate with 0 to give us 4 bits
 	.rAddrB    (rAddrB), 
 	.waddr     (wAddr), 	  // mux above
-	.immValue,
+	.immValue  (immValue),
 	.data_in   (regWriteValue), 
 	.data_outA (ReadA), 
 	.data_outB (ReadB)
     );
-// one pointer, two adjacent read accesses: (optional approach)
-//	.raddrA ({Instruction[5:3],1'b0});
-//	.raddrB ({Instruction[5:3],1'b1});
 
     assign InA = ReadA;						          // connect RF out to ALU in
     assign InB = ReadB;
@@ -94,7 +91,7 @@ logic       SC_IN;         // carry register (loop with ALU)
     ALU ALU1  (
 	  .INPUTA  (InA),
 	  .INPUTB  (InB), 
-	  .OP      (Instruction[8:6]),
+	  .OP      (Instruction[8:5]),
 	  .OUT     (ALU_out),//regWriteValue),
 	  .SC_IN   ,
 	  .SC_OUT  ,
@@ -102,27 +99,25 @@ logic       SC_IN;         // carry register (loop with ALU)
 	  .GREATER
 	  );
   
-	data_mem data_mem1(
-		.DataAddress  (ReadA)    , 
+	data_mem dm1(
+		.DataAddress  (ReadB)    , 
 		.ReadMem      (1'b1),          //(MEM_READ) ,   always enabled 
 		.WriteMem     (MEM_WRITE), 
-		.DataIn       (memWriteValue), 
+		.DataIn       (ReadA), 
 		.DataOut      (Mem_Out)  , 
-		.CLK 		  		     ,
+		.CLK,
 		.reset		  (start)
 	);
 	
 // count number of instructions executed
 always_ff @(posedge CLK)
-  if (start == 1)	   // if(start)
+  if (start == 1) begin	   // if(start)
   	cycle_ct <= 0;
-  else if(halt == 0)   // if(!halt)
+	SC_IN <= 0;
+	end
+  else if(halt == 0) begin  // if(!halt)
   	cycle_ct <= cycle_ct+16'b1;
-
-always_ff @(posedge CLK)    // carry/shift in/out register
-  if(sc_clr)				// tie sc_clr low if this function not needed
-    SC_IN <= 0;             // clear/reset the carry (optional)
-  else if(sc_en)			// tie sc_en high if carry always updates on every clock cycle (no holdovers)
-    SC_IN <= SC_OUT;        // update the carry  
+	SC_IN <= SC_OUT;
+	end
 
 endmodule

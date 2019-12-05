@@ -18,11 +18,11 @@ package definitions;
     const logic [3:0]kSUB  = 4'b1100;
     const logic [3:0]kADDI = 4'b1101;
     const logic [3:0]kANDI = 4'b1110;
-    const logic [3:0]kCLR  = 4'b1111;
+    const logic [3:0]kSHLR  = 4'b1111;
 
 // enum names will appear in timing diagram
     typedef enum logic[3:0] {
-	MOV, XOR, ADD, AND, LSH, RSH, STORE, LOAD, BRE, J, COMP, BRGT, SUB, ADDI, ANDI, CLR
+	MOV, XOR, ADD, AND, LSH, RSH, STORE, LOAD, BRE, J, COMP, BRGT, SUB, ADDI, ANDI, SHLR
     } op_mne;
 // note: kADD is of type logic[2:0] (3-bit binary)
 //   ADD is of type enum -- equiv., but watch casting
