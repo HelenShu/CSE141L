@@ -7,7 +7,7 @@
 //   combinational (unclocked) ALU
 import definitions::*;			  // includes package "definitions"
 module ALU(
-  input [ 7:0] INPUTA,      	  // value from accumulator
+  input signed [ 7:0] INPUTA,      	  // value from accumulator
                INPUTB,		  // value from register/immediate
   input [ 3:0] OP,				  // ALU opcode, part of microcode
   input        SC_IN,             // shift in/carry in 
@@ -83,7 +83,7 @@ module ALU(
 	   end
     kCOMP : begin                                           
            ZERO = INPUTA - INPUTB == 0 ? 1 : 0;
-	   GREATER = INPUTA - INPUTB > 0 ? 1 : 0;
+	   GREATER = (INPUTA - INPUTB) > 0 ? 1 : 0;
 	   SC_OUT = 0;
 	   OUT = 0;
 	   end
