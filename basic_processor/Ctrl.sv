@@ -23,14 +23,14 @@ always_comb begin
  	 case(Instruction[4:0])		   //skips value 0
 		5'b00000:   	Target = 16'h0003; //start-ish of program 1
 		5'b00001:	Target = 16'h01F7; //end of program 1
-		5'b00010:	Target = 16'h0452; //2_bit_error
-		5'b00011:	Target = 16'h0434; //Upper_byte
-		5'b00100:	Target = 16'h042A; //Lower_0
-		5'b00101:	Target = 16'h0430; //Lower_1
-		5'b00110:	Target = 16'h0459; //Decode
-		5'b00111:	Target = 16'h0448; //Upper_0
-		5'b01000:	Target = 16'h044D; //Upper_1
-		5'b01001:	Target = 16'h04A1; //End of Program2
+		5'b00010:	Target = 16'h044F; //2_bit_error
+		5'b00011:	Target = 16'h0431; //Upper_byte
+		5'b00100:	Target = 16'h0427; //Lower_0
+		5'b00101:	Target = 16'h042C; //Lower_1
+		5'b00110:	Target = 16'h0456; //Decode
+		5'b00111:	Target = 16'h0445; //Upper_0
+		5'b01000:	Target = 16'h044A; //Upper_1
+		5'b01001:	Target = 16'h049E; //End of Program2
 		5'b01010:	Target = 16'h0201; //Program2 Loop
 		/*5'b01011:			   //start-ish of program 3
 		5'b01100:			   //Match

@@ -1,0 +1,184 @@
+ANDI 00000
+ADDI 11111
+ADDI 11111
+ADDI 11111
+ADDI 11111
+ADDI 00100
+MOV R0      #Addi R0, R0, 128
+ADDI 11111
+ADDI 00001
+MOV R1      #Addi R1, R1, 160
+ANDI 00000
+ADDI 11111
+MOV R3
+SHL R3 011
+ANDI 00000
+ADD R3
+MOV R10     #Stores value 0xF8 in R10
+ANDI 00000
+ADDI 11111
+ADDI 11111
+ADDI 11111
+ADDI 11111
+ADDI 11111
+ADDI 00101
+MOV R11     #Stores value 160 in R11
+LD R3 R1    #Load R3, [0]R1 @Grabs 5-bit pattern
+ANDI 00000
+ADD R1
+ADDI 11111
+ADDI 00001
+MOV R12
+SHL R3 011
+ANDI 00000
+ADD R3
+MOV R7      #Shift Left R7, 3 @Moves pattern to front of byte
+LD R2 R0    # Start of Program3 Loop Load R2, [0]R0
+ANDI 00000
+ADD R10
+AND R2
+MOV R3      #And R3, R2, 0xF8 @Gets first five bytes
+CMP R3 R7   #Compare R3, R7
+BRE 01100   #Beq Match
+J 01101     #J Next
+ANDI 00000  #Start of Match
+ADD R8
+ADDI 00001
+MOV R8      #Add R8, R8, 1
+ANDI 00000
+MOV R3
+CMP R3 R6   #Compare R6, 0 @R6 checks if we've already counted this byte
+BRE 01110   #Beq ByteMatch
+SHL R2 001  #Start of Next
+ANDI 00000
+ADD R5
+ADDI 00001
+MOV R5      #Addi R5, R5, 1
+ADDI 00010
+MOV R3
+CMP R3 R5  #Compare R5, 3 @Max four times pattern appears in one byte
+BRE 01111   #Beq NextByte
+J 01011     #J Program3_Loop1
+ANDI 00000  #Start of NextByte
+ADD R0
+ADDI 00001
+MOV R0      #Add R0, R0, 1
+ANDI 00000
+MOV R5
+MOV R6
+ANDI 00000
+ADD R11
+MOV R3
+CMP R0 R3   #Compare R0, 160
+BRE 10000   #Beq Part1_2_End
+J 01011     #J Program3_Loop1
+ANDI 00000  #Start of ByteMatch
+ADD R9
+ADDI 00001
+MOV R9      #Add R9, R9, 1
+ANDI 00000
+ADD R6
+ADDI 00001
+MOV R6      #Add R6, R6, 1
+J 01101     #J Next
+ANDI 00000
+ADD R12
+MOV R1
+STR R7 R1   # Start of Part1_2_End  Store R7, [0]R1
+ANDI 00000
+ADD R1
+ADDI 00001
+MOV R1
+STR R8 R1   #Store R8, [1]R1
+ANDI 00000
+MOV R2
+MOV R3
+MOV R4
+MOV R5
+MOV R6
+MOV R7
+MOV R8
+MOV R0
+ANDI 00000
+ADDI 11111
+ADDI 11111
+ADDI 11111
+ADDI 11111
+ADDI 00100
+MOV R0      #Addi R0, R0, 128 @Set R0 back to 128
+LD R2 R0    #Start of Loop_3    Load R2, [0]R0
+ANDI 00000
+ADD R0
+ADDI 00001
+MOV R1
+LD R3 R0    #Load R3, [1]R0
+ANDI 00000
+ADD R2
+AND R10
+MOV R1      #And R1, R2, 0xF8 @Gets first five bytes
+CMP R1 R7   #Compare R1, R7
+BRE 10010   #Beq Match_3
+J   10011   #J Next_3
+ANDI 00000  #Start of Match_3
+ADD R8
+ADDI 00001
+MOV R8      #Add R8, R8, 1
+SHL R2 001  #Start of Next_3
+ANDI 00000
+ADDI R2
+SHL R3 001
+ADDI 0
+MOV R2      #Addi R2, R3, 0 //Add shifted out value to R2
+ANDI 00000
+ADD R5
+ADDI 00001
+MOV R5      #Addi R5, R5, 1
+ANDI 00000
+ADDI 01000
+MOV R3
+CMP R3 R5   #Compare R8, 8 @All Values shifted out
+BRE 10100   #Beq NextByte_3
+J 10001     #J Loop_3
+ANDI 00000  # Start of NextByte_3
+MOV R8      #set counter back to 0
+ANDI 00000
+ADD R0
+ADDI 00001
+MOV R0      #Add R0, R0, 1
+ANDI 00000
+ADDI R11
+MOV R4
+CMP R0 R4   #Compare R0, 160
+BRE 10101   #Beq LastByte
+LD R3 R0    #Load R3, [0]R0
+J 10001     #J Loop_3
+ANDI 00000  #Start of LastByte //checks last byte
+ADD R2
+AND R10
+MOV R3      #Andi R4, R2, 0xF8
+CMP R3 R7   #Comp R4, R7
+BRE 10110   #Beq LastByte_NoMatch
+ANDI 00000
+ADD R8
+ADDI 00001
+MOV R8      #Addi R8, R8, 1
+ANDI 00000  #Start of LastByte_NoMatch
+ADD R5
+ADDI 00001
+MOV R5      #Addi R5, R5, 1
+ANDI 00000
+ADDI 00011
+MOV R3
+CMP R3 R5   #Comp R5, 3 @Only three possible shifts in one byte
+BRE 10111   #Beq End
+SHL R2 001  #Shift Left R2, 1
+J 10101     #J LastByte
+ANDI 00000
+ADD R1
+ADDI 00001
+MOV R1
+ANDI 00000
+ADD R12
+ADDI 00010
+MOV R1
+STR R5 R1   #Store R5, [2]R1
